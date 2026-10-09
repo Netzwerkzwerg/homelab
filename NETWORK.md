@@ -14,7 +14,7 @@ The network is segmented using VLANs according to device type, trust level and r
 |---:|---|---|
 | 10 | Hauptnetz_Privat | PCs, MacBooks, consoles and primary WLAN |
 | 20 | SmartHome_IoT | Hue, Homematic, EcoFlow, Thermomix and other IoT devices |
-| 25 | Multimedia_Cast | Chromecasts, Google Minis, AVR, projector and other casting/multimedia devices |
+| 30 | Multimedia_Cast | Chromecasts, Google Minis, AVR, projector and other casting/multimedia devices |
 | 90 | Gastnetz_Trusted | Visitor network with access to selected casting functionality |
 | 95 | Gastnetz_QR | Isolated visitor network with Internet-only access and bandwidth limitation |
 | — | Direktlink_2.5G | Dedicated point-to-point 2.5 Gbit/s connection between PCs |
@@ -48,9 +48,9 @@ The purpose of this VLAN is to isolate IoT devices from the primary private netw
 
 Communication from IoT devices to other networks should be restricted by firewall rules to only what is actually required.
 
-## VLAN 25 — Multimedia / Cast
+## VLAN 30 — Multimedia / Cast
 
-VLAN 25 contains multimedia and casting devices.
+VLAN 30 contains multimedia and casting devices.
 
 Examples include:
 
