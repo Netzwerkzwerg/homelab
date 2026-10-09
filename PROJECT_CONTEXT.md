@@ -74,7 +74,7 @@ Concrete IP addresses and internal subnet assignments are intentionally omitted 
 |---:|---|---|
 | 10 | Hauptnetz_Privat | Trusted personal computers, MacBooks, consoles and primary WLAN |
 | 20 | SmartHome_IoT | Smart-home and IoT devices, including Hue, Homematic, EcoFlow and Thermomix |
-| 25 | Multimedia_Cast | Chromecasts, Google Minis, AV receiver, projector and other multimedia devices |
+| 30 | Multimedia_Cast | Chromecasts, Google Minis, AV receiver, projector and other multimedia devices |
 | 90 | Gastnetz_Trusted | Visitor network with access to selected casting functionality |
 | 95 | Gastnetz_QR | Isolated guest Internet access with bandwidth limitation |
 | TBD | Direktlink_2.5G | Dedicated point-to-point connection; endpoints and addressing still need confirmation |
@@ -97,7 +97,7 @@ The intended baseline is **deny inter-VLAN traffic by default**, with explicit r
 
 - VLAN 10: trusted client network with administrative access to selected services
 - VLAN 20: restricted IoT network; Internet access only as required for cloud functionality and updates
-- VLAN 25: multimedia network with required Internet access and controlled casting access
+- VLAN 30: multimedia network with required Internet access and controlled casting access
 - VLAN 90: guest access to selected casting functionality, without unrestricted access to internal networks
 - VLAN 95: Internet-only guest network, isolated from internal networks and subject to bandwidth restrictions
 
@@ -164,7 +164,7 @@ Home Assistant is intended to become the central smart-home platform.
 
 The existing smart-home setup is fragmented and is planned for gradual migration.
 
-IoT devices are intended to reside primarily in VLAN 20, while multimedia and casting devices reside in VLAN 25.
+IoT devices are intended to reside primarily in VLAN 20, while multimedia and casting devices reside in VLAN 30.
 
 Required communication between Home Assistant, IoT devices and multimedia services must be identified before restrictive firewall rules are finalized.
 
@@ -190,7 +190,7 @@ The following questions need resolution before the design is considered final:
 2. Which switch ports carry tagged VLANs, and which are access ports?
 3. Does the current switch and access-point configuration support every required VLAN and SSID?
 4. Which devices require communication between VLANs, especially Home Assistant and IoT devices?
-5. Which casting flows are needed for VLANs 10, 25 and 90?
+5. Which casting flows are needed for VLANs 10, 30 and 90?
 6. Is the 2.5 Gbit/s point-to-point link between two PCs, or between a PC and a NAS?
 7. Is the HDD currently installed and operational, and how will its data be backed up independently?
 8. Which services will run in VMs versus containers?
