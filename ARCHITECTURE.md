@@ -1,111 +1,36 @@
-# Homelab Architecture
+# Architecture
 
-## Overview
+## Target design
 
-The homelab is being rebuilt with a focus on:
-
-- simplicity
-- reliability
-- security
-- clear separation of responsibilities
-- easy maintenance
-- good documentation
-- future expandability
-
-The system is based on a Proxmox host running on an N100 mini PC.
-
-## High-level architecture
+A NiPoGi N100 mini PC runs Proxmox as the virtualization host. OPNsense is planned as a virtual router/firewall; VLANs will separate trusted clients, IoT, multimedia, and guest devices.
 
 ```text
 Internet
    |
-   v
-[ Router / Firewall ]
+Dedicated WAN interface
    |
-   v
-[ VLANs / Network Segmentation ]
-   |
-   +-------------------+
-   |                   |
-   v                   v
-[ Trusted LAN ]    [ IoT / Smart Home ]
-   |                   |
-   v                   v
-[ Services ]      [ Home Assistant ]
-   |
-   v
-[ Other Containers / VMs ]
+[ Proxmox: OPNsense VM ] ---- VLAN trunk ---- [ Switches / UniFi U7 Lite ]
+   |                                             |
+   +-- planned services and VMs/containers       +-- VLAN-specific clients
 ```
 
-This diagram is conceptual and will be refined as the infrastructure is designed.
+This is a target concept, not an implemented topology. Physical interface mapping, switch ports, and recovery procedures remain open.
 
-## Virtualization
+## Responsibilities
 
-Proxmox is the virtualization platform.
+- **Proxmox:** host for virtual machines and containers.
+- **OPNsense (planned):** routing, inter-VLAN firewalling, Internet access control, and narrowly scoped service discovery if needed.
+- **Home Assistant (planned):** central smart-home platform.
+- **NetBox (planned):** infrastructure inventory and IPAM after migration from the current private table.
 
-The Proxmox host will provide virtual machines and/or containers for the different services.
+Do not split services into separate VMs or containers without a clear security, reliability, maintenance, or resource-management benefit.
 
-Services should be separated where there is a meaningful benefit in terms of:
+## Design principles
 
-- security
-- reliability
-- maintenance
-- resource management
-- independent upgrades
+- Deny inter-VLAN traffic by default; allow only documented requirements.
+- Keep IoT and guest devices separated from trusted clients.
+- Treat service discovery (such as mDNS) separately from permission to communicate.
+- Prefer simple, maintainable designs and document consequential decisions.
+- Plan for the fact that a virtual firewall depends on the Proxmox host being operational.
 
-Services should not be separated into individual VMs or containers without a clear reason.
-
-## Network
-
-The network will use VLANs to separate different classes of devices and services.
-
-The exact VLAN structure will be documented separately in `NETWORK.md`.
-
-The router/firewall is responsible for routing between VLANs and enforcing firewall rules.
-
-## Smart Home
-
-Home Assistant will be the central platform for the smart home.
-
-The existing smart-home setup is currently fragmented and will be migrated gradually.
-
-The migration should avoid unnecessary disruption to the existing system.
-
-## Infrastructure Inventory
-
-NetBox is being considered as the source of truth for infrastructure inventory.
-
-This may include:
-
-- physical devices
-- virtual machines
-- interfaces
-- IP addresses
-- VLANs
-- networks/prefixes
-
-The exact relationship between GitHub documentation and NetBox will be defined as the infrastructure develops.
-
-## Design Principles
-
-### Keep it simple
-
-Prefer simple solutions that are easy to understand and maintain.
-
-### Separate concerns
-
-Networking, virtualization, services and documentation should have clearly defined responsibilities.
-
-### Document important decisions
-
-Architectural decisions that have meaningful long-term consequences should be documented.
-
-### Avoid unnecessary complexity
-
-Do not introduce additional software, services or abstractions without a clear benefit.
-
-### Security by default
-
-Services should only be exposed where necessary.
-
-Network segmentation and firewall rules should be used to limit unnecessary communication between systems.
+See [NETWORK.md](NETWORK.md) for VLAN intent and [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) for status and open decisions.
