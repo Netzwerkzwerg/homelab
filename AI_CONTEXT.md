@@ -1,67 +1,37 @@
-# Homelab – AI Context
+# AI Context
 
 ## Purpose
 
-This repository documents the architecture, configuration concepts and important decisions of my homelab.
+This public repository is the concise, English-language reference for homelab architecture, intended design, and important decisions. It should remain readable by people and external AI assistants, including ChatGPT, Gemini, and Perplexity.
 
-The documentation is intended to be understandable and useful for AI assistants such as ChatGPT, Gemini and Perplexity.
+## Current state
 
-## Current situation
+- Proxmox is installed on the NiPoGi N100 host; no VMs or services are deployed.
+- The UniFi U7 Lite, Netgear GS108PE, and UniFi USW Flex Mini are present but not configured for the target network. The switches are still integrated into the old network.
+- The additional 5 TB HDD is ordered but has not arrived.
+- See [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) for the concise status summary.
 
-I am rebuilding my homelab from scratch.
+## Working with the user
 
-The current main hardware is an N100 mini PC running Proxmox.
+The user is a beginner with Linux and networking. Explain commands, reasons, risks, and trade-offs before significant changes. Do not assume planned designs are implemented. Prefer simple, maintainable solutions and ask before consequential or disruptive changes.
 
-The planned system will include:
-
-- Proxmox as the virtualization platform
-- Router and firewall functionality
-- VLAN-based network segmentation
-- Home Assistant
-- Various containers and services
-- A structured infrastructure documentation
-- NetBox as a possible source of truth for infrastructure inventory
-
-## How I want AI assistants to help
-
-I am a beginner with GitHub and Linux.
-
-I want AI assistants to:
-
-- explain what commands and configuration changes do
-- explain the reasoning behind architectural decisions
-- point out risks and trade-offs
-- suggest better approaches when appropriate
-- help me understand the system rather than simply doing everything automatically
-- keep the architecture consistent with the existing documentation
-
-I do not need an AI agent to autonomously type commands or operate my system.
-
-I prefer to execute commands myself after understanding what they do.
-
-## Important principle
-
-Before making significant architectural changes, explain:
-
-1. What is being changed
-2. Why it is being changed
-3. What alternatives exist
-4. What the advantages and disadvantages are
-5. What impact the change has on the rest of the homelab
+When proposing a significant architectural change, briefly cover what changes, why, alternatives, trade-offs, and impact on the rest of the system.
 
 ## Sources of truth
 
-The planned documentation model is:
+- GitHub: concise architecture, design intent, and decisions.
+- Private inventory table, transitioning to NetBox: actual IP assignments and detailed inventory.
+- Official vendor documentation: current technical behavior and configuration guidance.
 
-- GitHub: architecture, documentation, configuration concepts and decisions
-- NetBox: actual infrastructure inventory such as devices, interfaces, IP addresses, VLANs and prefixes
-- Official documentation: current software-specific technical information
-- AI memory: personal preferences and working style, but not authoritative infrastructure data
+Do not duplicate detailed inventory or full configuration tables here. Keep real IP addresses, prefixes, credentials, keys, tokens, MAC addresses, VPN endpoints, and other sensitive details out of this public repository. Use anonymized examples only.
 
-## Security
+## Documentation rules
 
-This repository is public.
+Use these status values consistently:
+- **Present** — physically or logically exists.
+- **Configured** — set up and verified for its stated role.
+- **Planned** — intended but not yet implemented.
+- **Open** — needs a decision or verification.
+- **Rejected** — explicitly not part of the target design.
 
-Therefore it must never contain:
-
--
+“Present” does not mean “configured.” Keep this repository short, remove duplication when information is preserved, and put each detail in its natural home: network policy in `NETWORK.md`, current status and open decisions in `PROJECT_CONTEXT.md`, and overall design in `ARCHITECTURE.md`.
