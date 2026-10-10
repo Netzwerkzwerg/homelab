@@ -1,151 +1,38 @@
-# Network Architecture
+# Network Design
 
 ## Status
 
-This document describes the currently planned network architecture.
+This is the intended design, not a deployed configuration. Inter-VLAN traffic will be denied by default and allowed only through explicit firewall rules.
 
-The architecture is not yet considered final. Design decisions may change during implementation and testing.
+## VLANs
 
-## Network Segmentation
-
-The network is segmented using VLANs according to device type, trust level and required communication.
-
-| VLAN | Name | Intended devices / purpose |
+| VLAN | Name | Purpose |
 |---:|---|---|
-| 10 | Hauptnetz_Privat | PCs, MacBooks, consoles and primary WLAN |
-| 20 | SmartHome_IoT | Hue, Homematic, EcoFlow, Thermomix and other IoT devices |
-| 30 | Multimedia_Cast | Chromecasts, Google Minis, AVR, projector and other casting/multimedia devices |
-| 90 | Gastnetz_Trusted | Visitor network with access to selected casting functionality |
-| 95 | Gastnetz_QR | Isolated visitor network with Internet-only access and bandwidth limitation |
-| — | Direktlink_2.5G | Dedicated point-to-point 2.5 Gbit/s connection between PCs |
+| 10 | Private | Trusted PCs, MacBooks, consoles, and primary WLAN |
+| 20 | Smart Home / IoT | Hue, Homematic, EcoFlow, Thermomix, and other IoT devices |
+| 30 | Multimedia / Cast | Chromecast, Google Minis, AV receiver, projector, and other media devices |
+| 90 | Trusted Guest | Guest devices allowed to use selected casting functions |
+| 95 | QR Guest | Internet-only guest access; no access to devices or networks inside the home |
+| — | 2.5G Direct Link | Planned point-to-point link between PCs; outside the VLAN design |
 
-## VLAN 10 — Private Network
+VLAN names are descriptive; real IP ranges and assignments are kept in a private inventory and must not be published here.
 
-VLAN 10 is the primary trusted network.
+## Access policy
 
-It is intended for:
+- **VLAN 10:** trusted client network. Administrative access should be limited to designated management devices and required destinations.
+- **VLAN 20:** isolate IoT devices. Permit only required Internet and internal service flows.
+- **VLAN 30:** multimedia devices. Permit casting only from intended clients and services.
+- **VLAN 90:** allow guest devices to reach selected casting devices in VLAN 30. Do not grant general access to the private or IoT networks. Specific permission to control selected smart-home devices may be considered later, but is not currently authorized or defined.
+- **VLAN 95:** Internet access only. Block access to all devices and networks inside the home, including VLANs 10, 20, 30, and 90. Apply a bandwidth limit if supported by the final design.
 
-- personal computers
-- MacBooks
-- game consoles
-- the primary trusted WLAN
+These are policy intentions, not implemented firewall rules. Casting may need mDNS or other service discovery across VLANs; enable only the required discovery paths. Discovery alone must not grant network access.
 
-Devices in this network are considered trusted compared with IoT and guest devices.
+## Hardware and implementation
 
-## VLAN 20 — Smart Home / IoT
+The UniFi U7 Lite is the selected access point but is not configured yet. The Netgear GS108PE and UniFi USW Flex Mini are present and still integrated into the old network. VLAN support, switch-port assignments, SSID mapping, management access, and firewall rules must be verified during implementation.
 
-VLAN 20 contains smart-home and IoT devices.
+The 2.5 Gbit/s direct link is planned; its exact endpoints and addressing remain open.
 
-Examples include:
+## Public-repository boundary
 
-- Philips Hue
-- Homematic
-- EcoFlow
-- Thermomix
-- other devices with limited trust requirements
-
-The purpose of this VLAN is to isolate IoT devices from the primary private network.
-
-Communication from IoT devices to other networks should be restricted by firewall rules to only what is actually required.
-
-## VLAN 30 — Multimedia / Cast
-
-VLAN 30 contains multimedia and casting devices.
-
-Examples include:
-
-- Chromecast devices
-- Google Minis
-- AV receiver
-- projector / beamer
-
-Casting between trusted clients and devices in this VLAN must be supported where required.
-
-The exact firewall and multicast/mDNS requirements still need to be determined during implementation.
-
-## VLAN 90 — Trusted Guest Network
-
-VLAN 90 is intended for visitors who require more functionality than the isolated guest network.
-
-The primary planned use case is:
-
-- visitor devices
-- Internet access
-- selected access to casting functionality
-
-Access to the private network and IoT network should remain restricted.
-
-The exact rules for accessing VLAN 25 will be defined during implementation.
-
-## VLAN 95 — QR Guest Network
-
-VLAN 95 is intended as a simple, isolated guest network.
-
-Characteristics:
-
-- Internet access only
-- no access to private networks
-- no access to IoT networks
-- bandwidth limitation
-- intended for easy access via a QR code
-
-The purpose is to provide visitors with a convenient network without granting access to internal infrastructure.
-
-## Dedicated 2.5 Gbit/s Point-to-Point Link
-
-A dedicated 2.5 Gbit/s connection is planned between PCs.
-
-This is a direct point-to-point connection and is therefore not part of the VLAN structure.
-
-Its purpose is high-speed communication between the connected systems without routing this traffic through the normal network architecture.
-
-The exact addressing and physical implementation will be documented separately once finalized.
-
-## Inter-VLAN Communication
-
-Inter-VLAN communication should be denied by default and explicitly allowed only where required.
-
-Examples of communication that may require dedicated firewall rules include:
-
-- Home Assistant communicating with IoT devices
-- trusted clients communicating with casting devices
-- guest devices accessing selected casting functionality
-- infrastructure services communicating with required networks
-
-The exact firewall policy will be designed after the service architecture has been defined.
-
-## Multicast and Service Discovery
-
-Casting and smart-home functionality may require protocols such as mDNS and other multicast-based service discovery mechanisms.
-
-These requirements must be considered when designing the firewall and VLAN architecture.
-
-Rather than allowing unrestricted communication between VLANs, service discovery should be enabled only where necessary.
-
-## Security Principles
-
-The network follows these principles:
-
-1. Networks are separated according to trust and purpose.
-2. Inter-VLAN communication is denied by default.
-3. Required communication is explicitly permitted.
-4. IoT devices are isolated from trusted personal devices where practical.
-5. Guest networks do not receive access to internal infrastructure.
-6. Guest bandwidth can be restricted independently.
-7. Network changes should be documented before or alongside implementation.
-
-## Sensitive Information
-
-This public repository intentionally does not contain:
-
-- internal IP address ranges
-- public IP addresses
-- MAC addresses
-- device-specific hostnames
-- VPN endpoints
-- firewall credentials
-- Wi-Fi passwords
-- API keys or tokens
-- other authentication information
-
-Detailed infrastructure inventory and sensitive configuration may be maintained separately, for example using NetBox or a private repository.
+Do not publish real IP addresses or prefixes, public IPs, MAC addresses, device-specific hostnames, VPN endpoints, credentials, Wi-Fi passwords, keys, tokens, or detailed private inventory. Use anonymized examples only.
