@@ -21,18 +21,20 @@ The UniFi Network Application runs in a Debian LXC. The U7 Lite is adopted, upda
 ## Responsibilities
 
 - **Proxmox:** virtualization host for VMs and containers.
-- **OPNsense:** routing, inter-VLAN firewalling, Internet access control, DHCP, and DNS.
+- **OPNsense:** routing, inter-VLAN firewalling, Internet access control, DHCP, DNS, and mDNS repeating.
 - **UniFi Network Application:** management of the UniFi access point and WLAN configuration.
 - **Home Assistant (planned):** central smart-home platform.
 - **NetBox (planned):** infrastructure inventory and IPAM after migration from the current private table.
 
-## Design principles
+## Network security and discovery
 
-- Deny inter-VLAN traffic by default; allow only documented requirements.
-- Implement and verify explicit firewall rules for all required inter-VLAN flows before considering segmentation complete.
-- Keep IoT and guest devices separated from trusted clients.
-- Treat Cast device discovery (mDNS/service discovery) separately from permission to communicate. A narrowly scoped cross-VLAN discovery service is still to be selected and configured.
-- Prefer simple, maintainable designs and document consequential decisions.
-- Plan for the fact that a virtual firewall depends on the Proxmox host being operational.
+- Deny inter-VLAN traffic by default where explicitly configured; permit only documented requirements.
+- VLAN10 is intentionally treated as a privileged infrastructure network. Its IPv4 pass-to-any rule remains in place; access from other VLANs is restricted by rules on their source interfaces.
+- VLAN50 administrator clients may access internal networks. Other VLAN50 clients are blocked from internal networks but retain Internet access.
+- VLANs 20, 30, and 40 have baseline rules for DNS/DHCP, blocking internal destinations, and allowing outbound access.
+- An OPNsense mDNS Repeater is enabled for VLANs 30, 40, 50, and 90. Firewall rules permit IPv4 UDP mDNS traffic to 224.0.0.251:5353 on those interfaces.
+- mDNS discovery is separate from permission to control or stream to Cast devices. Actual cross-VLAN casting remains untested because Cast receivers have not yet been deployed.
+- VLAN40 is not granted a broad Cast-device exception. A future Companion-to-Cast rule should be limited to the Companion host and the Cast device alias.
+- Captive Portal for VLAN95 is deferred until the public domain, portal URLs, and certificate approach are decided.
 
-See [NETWORK.md](NETWORK.md) for VLAN intent and [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) for status and open decisions.
+See [NETWORK.md](NETWORK.md) for VLAN intent, current firewall state, and open validation work; see [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) for the concise project status.
