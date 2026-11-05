@@ -2,9 +2,9 @@
 
 ## Status
 
-Seven VLANs have been created in the network design. VLANs 10, 20, and 30 are operational. VLANs 40 and 50 have recently shown correct gateway assignment and Internet access. The remaining end-to-end checks, and a complete functional review of all seven VLANs, are still open.
+Seven VLANs are defined. The baseline firewall configuration is in place for VLANs 20, 30, and 40, and the administrator access policy for VLAN50 is configured. VLAN10 intentionally remains a privileged infrastructure network with an IPv4 pass-to-any rule. Full end-to-end validation of all seven VLANs and all intended flows remains open.
 
-Inter-VLAN firewall rules have not yet been fully implemented and validated. The target policy is deny by default, with only explicitly required flows allowed. A cross-VLAN Cast discovery service (for example, a carefully scoped mDNS reflector/repeater) also remains to be selected, configured, and tested.
+A shared floating rule provides DNS and DHCP access for the VLANs. IPv6 is currently disabled.
 
 ## VLANs
 
@@ -20,24 +20,50 @@ Inter-VLAN firewall rules have not yet been fully implemented and validated. The
 
 Real IP ranges, prefixes, and assignments are kept in a private inventory and must not be published here.
 
-## Access policy
+## Current firewall policy
 
-- **VLAN 10:** management network for infrastructure. Administrative access should remain controlled.
-- **VLAN 20:** isolate IoT devices. Permit only required Internet and internal service flows.
-- **VLAN 30:** multimedia devices. Permit casting only from intended clients and services.
-- **VLAN 40:** isolate hosted services; allow only explicitly required client and service flows. Restrict Internet access where practical.
-- **VLAN 50:** trusted clients. Permit narrowly scoped access to selected management devices and ports, not unrestricted access to the management network.
-- **VLAN 90:** allow guest devices to reach selected casting devices in VLAN 30. Do not grant general access to other internal networks.
-- **VLAN 95:** Internet access only. Block access to all devices and networks inside the home.
+The common floating DNS/DHCP rule is evaluated before the interface rules. IPv6 is disabled.
 
-These are target policies, not a claim that the corresponding firewall rules are already active. Implement, document, and test the required rules between all seven VLANs. Casting may need mDNS or other service discovery across VLANs; enable only the required discovery paths. Discovery alone must not grant network access.
+| VLAN | Current interface policy |
+|---:|---|
+| 10 — Management | IPv4 pass-to-any retained intentionally. Treat as privileged infrastructure; restrict access from other VLANs on their source interfaces. |
+| 20 — Smart Home / IoT | Block source VLAN network to INTERNAL_NETS, then allow VLAN20 to any. |
+| 30 — Multimedia / Cast | Allow mDNS to 224.0.0.251 UDP/5353, block source VLAN network to INTERNAL_NETS, then allow VLAN30 to any. |
+| 40 — Services | Block source VLAN network to INTERNAL_NETS, then allow VLAN40 to any. No broad Cast-device access is granted. |
+| 50 — Trusted Clients | Allow TRUSTED_ADMIN_CLIENTS to INTERNAL_NETS; block the remaining VLAN50 network from INTERNAL_NETS; then allow VLAN50 to any. |
+| 90 — Trusted Guest | mDNS rule is present. Final general access policy and end-to-end behavior still need review and testing. |
+| 95 — QR Guest | Final interface rules and end-to-end isolation still need review and testing. Captive Portal is deferred. |
+
+The VLAN50 administrator alias contains only the designated administrator client addresses. Actual addresses are stored privately and are intentionally omitted from this public repository.
+
+## Aliases
+
+The following policy aliases are used in OPNsense:
+
+- `INTERNAL_NETS`: internal VLAN networks.
+- `TRUSTED_ADMIN_CLIENTS`: designated administrator clients.
+- `MANAGEMENT_HOSTS`: infrastructure management endpoints.
+- `MDNS_NETWORKS`: VLANs 30, 40, 50, and 90.
+- `CAST_DEVICES`: reserved for Cast receiver addresses; actual device addresses are kept private.
+
+Do not add actual addresses or detailed device inventory to this public document.
+
+## mDNS and Cast
+
+- OPNsense mDNS Repeater plugin is installed and enabled.
+- Listen interfaces: VLANs 30, 40, 50, and 90.
+- CARP failover is disabled; the blocklist is empty.
+- An IPv4 UDP rule to destination 224.0.0.251, destination port 5353, using `MDNS_NETWORKS` as source, is present on each of the four participating interfaces.
+- UniFi mDNS proxy remains disabled.
+- mDNS only provides service discovery. It does not authorize Cast control or media traffic by itself.
+- No Cast receivers are currently deployed, so discovery and actual casting have not yet been tested.
+- Planned access: allow VLAN50 and VLAN90 clients to reach the `CAST_DEVICES` alias in VLAN30. Do not grant VLAN40 broad access; when Companion is deployed, add a source-host-specific rule from Companion to `CAST_DEVICES`.
 
 ## DHCP and DNS
 
 - DHCP is provided by Kea DHCPv4 on OPNsense.
 - DNS for the management network is provided by dnsmasq; the other VLANs use Unbound.
-- DNS access is controlled by firewall rules.
-- DHCP subnet definitions for the newly added services and trusted-client networks were added after initial lease/gateway inconsistencies. Correct gateway assignment and Internet access have since been observed, but a router restart and repeat verification remain pending.
+- DNS and DHCP access is handled by the shared floating firewall rule.
 
 ## Wi-Fi and switching
 
@@ -45,21 +71,18 @@ These are target policies, not a claim that the corresponding firewall rules are
 - UniFi Network Application runs in a Debian LXC.
 - OPNsense is used as a third-party gateway; VLAN networks are represented in UniFi and mapped to WLANs.
 - The access point's switch connection uses the management network untagged/native and the other WLAN VLANs tagged.
-- The IoT WLAN in VLAN 20 has been set up and tested.
-- mDNS proxying in UniFi is disabled. Cross-VLAN Cast discovery is intended to be handled deliberately through a suitable OPNsense-side service or other explicitly chosen component.
-- 802.1X is disabled because no RADIUS service is deployed.
+- mDNS proxying in UniFi is disabled; cross-VLAN discovery is handled by the OPNsense mDNS Repeater.
 
-## Validation scope
+## Open work and validation
 
-Before treating the network as complete, test all seven VLANs (10, 20, 30, 40, 50, 90, and 95), not just DHCP. Verify as applicable:
-
-- VLAN tagging, client connectivity, DHCP leases, subnet/gateway assignment, and DNS resolution.
-- Internet access and intended restrictions.
-- Inter-VLAN isolation and each explicitly permitted flow.
-- Access to management interfaces only from authorized networks/devices.
-- WLAN-to-VLAN mapping and roaming/client behavior.
-- Cast device discovery and actual casting across the intended VLAN boundary.
-- IPv4/IPv6 behavior, ensuring IPv6 does not bypass the intended segmentation.
+- Review and verify the final interface rules for VLAN90 and VLAN95.
+- Verify VLAN10 management access is limited from other VLANs as intended.
+- Add and test the planned VLAN50/VLAN90-to-Cast rules when Cast receivers are deployed.
+- Add narrowly scoped service-specific rules as applications are deployed (for example, Home Assistant to required IoT devices and Companion to Cast devices).
+- Configure VLAN95 Captive Portal only after the public domain, portal URLs, and certificate approach are settled.
+- Test all seven VLANs: VLAN tagging, DHCP, DNS, Internet access, internal isolation, permitted flows, and management access.
+- Test mDNS discovery and actual casting once receivers are available.
+- Revisit IPv6 policy if IPv6 is enabled in the future.
 
 ## Public-repository boundary
 
