@@ -19,43 +19,44 @@ This file is the concise status summary. Network policy belongs in [NETWORK.md](
 | Managed switch | Configured | Connected to Proxmox VLAN trunk and access point |
 | UniFi Network Application | Configured | Runs in a Debian LXC and is reachable |
 | UniFi U7 Lite | Configured | Adopted, updated, and online |
-| VLAN 10 — Management | Configured | Operational; full policy validation pending |
-| VLAN 20 — Smart Home / IoT | Configured | Operational; IoT WLAN tested |
-| VLAN 30 — Multimedia / Cast | Configured | Operational |
-| VLAN 40 — Services | Open | Created; correct gateway and Internet access observed; router restart and full validation pending |
-| VLAN 50 — Trusted Clients | Open | Created; correct gateway and Internet access observed; router restart and full validation pending |
-| VLAN 90 — Trusted Guest | Open | Created in UniFi; end-to-end connectivity and isolation need validation |
-| VLAN 95 — QR Guest | Open | Created in UniFi; end-to-end connectivity and isolation need validation |
-| Inter-VLAN firewall policy | Open | Rules between all networks still need to be implemented and tested |
-| Cross-VLAN Cast discovery | Open | Select and configure a service for discovery (likely scoped mDNS reflection/repeater), then test actual casting |
+| VLAN10 — Management | Configured | Privileged infrastructure network; IPv4 pass-to-any retained |
+| VLAN20 — Smart Home / IoT | Configured | Internal networks blocked; outbound access allowed |
+| VLAN30 — Multimedia / Cast | Configured | Baseline isolation and mDNS rule configured |
+| VLAN40 — Services | Configured | Internal networks blocked; outbound access allowed; service-specific exceptions pending |
+| VLAN50 — Trusted Clients | Configured | Administrator alias can access internal networks; other VLAN50 clients are blocked from internal networks |
+| VLAN90 — Trusted Guest | Open | mDNS configured; final access policy and end-to-end tests pending |
+| VLAN95 — QR Guest | Open | Final interface rules and isolation tests pending; Captive Portal deferred |
+| Shared DNS/DHCP floating rule | Configured | Applies to VLANs |
+| OPNsense mDNS Repeater | Configured | Enabled on VLANs 30, 40, 50, and 90 |
+| Cross-VLAN Cast control | Open | Cast receivers not deployed; planned access from VLAN50 and VLAN90 to Cast device alias |
+| Captive Portal | Deferred | Revisit after domain, portal URLs, and certificate approach are decided |
 | Immich / Nextcloud | Planned | Intended for a Docker VM in the services network |
 | Home Assistant OS | Planned | Separate VM |
-| Bitfocus Companion | Planned | LXC |
+| Bitfocus Companion | Planned | LXC; later allow only Companion host to Cast devices |
 | 5 TB HDD and NAS storage | Planned | Storage and backup design still to be completed |
 | NetBox | Planned | Intended replacement for private IP/inventory table |
 | Independent backups | Planned | Strategy and implementation open |
 
 ## Network intent
 
-- **10 — Management:** Proxmox and network infrastructure.
-- **20 — Smart Home / IoT:** smart-home and IoT devices.
+- **10 — Management:** privileged network for Proxmox and network infrastructure.
+- **20 — Smart Home / IoT:** isolate smart-home and IoT devices.
 - **30 — Multimedia / Cast:** casting and multimedia devices.
-- **40 — Services:** self-hosted applications.
-- **50 — Trusted Clients:** trusted personal clients.
+- **40 — Services:** self-hosted applications; add only service-specific inter-VLAN permissions.
+- **50 — Trusted Clients:** designated administrator clients may access internal networks; other clients remain isolated.
 - **90 — Trusted Guest:** guest access to selected casting functions only.
 - **95 — QR Guest:** Internet-only access, isolated from home devices and networks.
 
-Inter-VLAN traffic is intended to be denied by default. The firewall rules implementing this policy are not yet complete.
-
 ## Next steps
 
-1. Restart OPNsense, then verify DHCP, gateway assignment, DNS, and connectivity in the affected networks.
-2. Perform a complete functional validation of all seven VLANs (10, 20, 30, 40, 50, 90, and 95), including WLAN mapping, DNS, Internet access, isolation, permitted flows, and IPv4/IPv6 behavior.
-3. Implement and test the inter-VLAN firewall rules according to the documented least-privilege policy.
-4. Select, configure, and test a cross-VLAN Cast discovery service (such as a scoped mDNS reflector/repeater); verify both device discovery and actual casting.
-5. Deploy planned services: Immich/Nextcloud, Home Assistant OS, and Bitfocus Companion.
-6. Finalize storage layout and independent backups for local and NAS storage.
-7. Migrate the private IP inventory to NetBox; keep real assignments out of this public repository.
+1. Review and verify final interface rules for VLAN90 and VLAN95.
+2. Perform a complete functional validation of all seven VLANs, including DHCP, DNS, Internet access, isolation, permitted flows, and management access.
+3. Test VLAN50 administrator access and non-admin client isolation.
+4. Deploy Cast receivers, then test mDNS discovery and actual casting; add the planned VLAN50/VLAN90 access rules if not already present.
+5. Deploy planned services and add narrowly scoped firewall exceptions (Home Assistant to required IoT devices; Companion to Cast devices).
+6. Configure VLAN95 Captive Portal after the domain, portal URLs, and certificate approach are settled.
+7. Finalize storage layout and independent backups.
+8. Migrate the private IP inventory to NetBox; keep real assignments out of this public repository.
 
 ## Security boundary
 
