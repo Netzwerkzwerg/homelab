@@ -13,18 +13,30 @@ Dedicated WAN interface
    |-- [ OPNsense VM ] ---- VLAN trunk ---- [ Managed switch ]
    |                                           |
    |-- [ UniFi Network Application LXC ]       +-- [ UniFi U7 Lite ]
-                                               +-- VLAN-specific clients
+   |                                           +-- VLAN-specific clients
+   |
+   +-- [ Debian Docker VM ] -- NetBox and other self-hosted services
 ```
 
-The UniFi Network Application runs in a Debian LXC. The U7 Lite is adopted, updated, and online.
+The UniFi Network Application runs in a Debian LXC. The U7 Lite is adopted, updated, and online. A separate Debian VM in the Services VLAN runs Docker Engine and Docker Compose. NetBox is deployed there.
 
 ## Responsibilities
 
 - **Proxmox:** virtualization host for VMs and containers.
 - **OPNsense:** routing, inter-VLAN firewalling, Internet access control, DHCP, DNS, and mDNS repeating.
 - **UniFi Network Application:** management of the UniFi access point and WLAN configuration.
+- **Docker VM:** runtime for containerized self-hosted applications.
+- **NetBox:** infrastructure documentation and IP address management (IPAM); detailed inventory belongs here rather than in this public repository.
 - **Home Assistant (planned):** central smart-home platform.
-- **NetBox (planned):** infrastructure inventory and IPAM after migration from the current private table.
+
+## NetBox deployment
+
+- NetBox runs as a Docker Compose stack on a Debian VM in VLAN40 (Services).
+- The web UI is published on TCP port 8000 of the Docker host.
+- The stack consists of the NetBox web application, a background worker, PostgreSQL, and Valkey services for queues and caching.
+- All stack containers were verified healthy after initial database migrations.
+- The internal DNS domain is `home.arpa`.
+- Exact host addresses, hostnames, credentials, and detailed inventory are intentionally not documented in this public repository.
 
 ## Network security and discovery
 
