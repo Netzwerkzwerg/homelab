@@ -11,8 +11,7 @@ This public repository is the concise, English-language reference for homelab ar
 - A Debian VM in the Services VLAN runs Docker Engine and Docker Compose for self-hosted applications.
 - NetBox is deployed on that Docker VM; its web application, background worker, PostgreSQL database, and Valkey services are running and healthy.
 - The internal DNS domain is `home.arpa`.
-- Seven VLANs are defined: 10 Management, 20 Smart Home / IoT, 30 Multimedia / Cast, 40 Services, 50 Trusted Clients, 90 Trusted Guest, and 95 QR Guest.
-- Full end-to-end validation of all VLANs and firewall flows remains open. Cast receivers are not yet deployed, so discovery and casting have not been tested.
+- Full end-to-end validation of the network and firewall flows remains open. Cast receivers are not yet deployed, so discovery and casting have not been tested.
 - See [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) for the concise status summary, [ARCHITECTURE.md](ARCHITECTURE.md) for the system design, and [NETWORK.md](NETWORK.md) for network policy and validation status.
 
 ## Working with the user
