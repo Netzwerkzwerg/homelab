@@ -13,12 +13,12 @@ A shared floating rule provides DNS and DHCP access for the VLANs. IPv6 is curre
 | 10 | Management | Proxmox host and network infrastructure management |
 | 20 | Smart Home / IoT | Smart-home and other IoT devices |
 | 30 | Multimedia / Cast | Casting and multimedia devices |
-| 40 | Services | Self-hosted applications such as Immich |
+| 40 | Services | Self-hosted applications such as NetBox |
 | 50 | Trusted Clients | Trusted personal client devices |
 | 90 | Trusted Guest | Guest devices with access to selected casting functions |
 | 95 | QR Guest | Internet-only guest access |
 
-Real IP ranges, prefixes, and assignments are kept in a private inventory and must not be published here.
+Real IP ranges, prefixes, and assignments are kept in NetBox and must not be published here.
 
 ## Current firewall policy
 
@@ -63,6 +63,7 @@ Do not add actual addresses or detailed device inventory to this public document
 
 - DHCP is provided by Kea DHCPv4 on OPNsense.
 - DNS for the management network is provided by dnsmasq; the other VLANs use Unbound.
+- The internal DNS domain is `home.arpa`.
 - DNS and DHCP access is handled by the shared floating firewall rule.
 
 ## Wi-Fi and switching
