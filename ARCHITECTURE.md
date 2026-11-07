@@ -32,7 +32,7 @@ The UniFi Network Application runs in a Debian LXC. The U7 Lite is adopted, upda
 ## NetBox deployment
 
 - NetBox runs as a Docker Compose stack on a Debian VM in VLAN40 (Services).
-- The web UI is published on TCP port 8000 of the Docker host.
+- The web UI is published on TCP port **8080** of the Docker host.
 - The stack consists of the NetBox web application, a background worker, PostgreSQL, and Valkey services for queues and caching.
 - All stack containers were verified healthy after initial database migrations.
 - The internal DNS domain is `home.arpa`.
@@ -40,13 +40,8 @@ The UniFi Network Application runs in a Debian LXC. The U7 Lite is adopted, upda
 
 ## Network security and discovery
 
-- Deny inter-VLAN traffic by default where explicitly configured; permit only documented requirements.
-- VLAN10 is intentionally treated as a privileged infrastructure network. Its IPv4 pass-to-any rule remains in place; access from other VLANs is restricted by rules on their source interfaces.
-- VLAN50 administrator clients may access internal networks. Other VLAN50 clients are blocked from internal networks but retain Internet access.
-- VLANs 20, 30, and 40 have baseline rules for DNS/DHCP, blocking internal destinations, and allowing outbound access.
-- An OPNsense mDNS Repeater is enabled for VLANs 30, 40, 50, and 90. Firewall rules permit IPv4 UDP mDNS traffic to 224.0.0.251:5353 on those interfaces.
-- mDNS discovery is separate from permission to control or stream to Cast devices. Actual cross-VLAN casting remains untested because Cast receivers have not yet been deployed.
-- VLAN40 is not granted a broad Cast-device exception. A future Companion-to-Cast rule should be limited to the Companion host and the Cast device alias.
-- Captive Portal for VLAN95 is deferred until the public domain, portal URLs, and certificate approach are decided.
+OPNsense provides inter-VLAN routing and firewalling. The detailed VLAN purposes, current firewall rules, mDNS configuration, planned access exceptions, and outstanding validation are maintained in [NETWORK.md](NETWORK.md), which is the single reference for network policy.
 
-See [NETWORK.md](NETWORK.md) for VLAN intent, current firewall state, and open validation work; see [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) for the concise project status.
+mDNS discovery does not itself authorize Cast control or media traffic. Actual cross-VLAN casting remains untested because Cast receivers have not yet been deployed.
+
+See [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) for the concise project status.
