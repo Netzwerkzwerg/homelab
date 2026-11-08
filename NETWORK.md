@@ -4,7 +4,29 @@
 
 Seven VLANs are defined. The baseline firewall configuration is in place for VLANs 20, 30, and 40, and the administrator access policy for VLAN50 is configured. VLAN10 intentionally remains a privileged infrastructure network with an IPv4 pass-to-any rule. Full end-to-end validation of all seven VLANs and all intended flows remains open.
 
-A shared floating rule provides DNS and DHCP access for the VLANs. IPv6 is currently disabled.
+A shared floating rule provides DNS and DHCP access for the VLANs. IPv6 is currently blocked/disabled and will be designed and implemented comprehensively in a later phase.
+
+## Upstream FRITZ!Box topology and policy
+
+### Selected design (implementation pending)
+
+- FRITZ!Box EG remains the upstream Internet router and provides the normal home network for its private clients and NAS.
+- OPNsense WAN remains connected to the normal FRITZ!Box EG home network. OPNsense continues to be the gateway and firewall for all locally managed VLANs.
+- FRITZ!Box Büro WAN is to be connected to the isolated LAN guest network of FRITZ!Box EG. Its office LAN remains behind FRITZ!Box Büro and is separate from OPNsense and its VLANs.
+- A VLAN-capable switch near FRITZ!Box EG and the existing basement switch are planned to transport the normal home segment and the FRITZ!Box guest segment separately over the inter-switch link. This requires suitable VLAN configuration and is not yet implemented.
+
+### Intended OPNsense policy
+
+- Create an alias for the complete upstream FRITZ!Box EG home subnet (actual prefix kept private in NetBox).
+- Block access to that upstream subnet by default on the internal OPNsense VLANs. This is a destination-network restriction; it must not block ordinary Internet access, because Internet destinations are not part of the upstream private subnet and OPNsense forwards them through its WAN gateway.
+- Add narrowly scoped exceptions only for designated management clients to the FRITZ!Box EG management address and selected upstream switch management addresses/services.
+- Do not grant broad upstream-subnet access to the entire Management VLAN unless required. Prefer specific source devices, destination addresses, and management ports.
+- The policy must cover both IPv4 and IPv6. IPv6 is currently blocked/disabled, so no IPv6 access is intended until a complete IPv6 plan is designed and tested.
+
+### Remote access / VPN decisions
+
+- The office VPN is independent: the office server will initiate an outbound tunnel for remote access to the office network only. It does not provide a route into OPNsense or the home VLANs. No inbound port forwarding on FRITZ!Box EG is planned for this office VPN.
+- A separate remote-access VPN for the home network may run on OPNsense (for example, WireGuard). If the Internet connection has a publicly reachable IPv4 address, FRITZ!Box EG can forward the chosen UDP port to the OPNsense WAN address. If the IPv4 address is dynamic, DDNS can keep a hostname updated. Public reachability and the actual address type still need verification; no port forward is configured yet.
 
 ## VLANs
 
@@ -83,7 +105,9 @@ Do not add actual addresses or detailed device inventory to this public document
 - Configure VLAN95 Captive Portal only after the public domain, portal URLs, and certificate approach are settled.
 - Test all seven VLANs: VLAN tagging, DHCP, DNS, Internet access, internal isolation, permitted flows, and management access.
 - Test mDNS discovery and actual casting once receivers are available.
-- Revisit IPv6 policy if IPv6 is enabled in the future.
+- Keep IPv6 blocked/disabled until a complete IPv6 addressing, routing, firewall, and remote-access design is implemented and validated.
+- Implement and test the selected FRITZ!Box EG / FRITZ!Box Büro topology and upstream-subnet restrictions described above.
+- Verify the public IPv4 reachability of the Internet connection before configuring a home WireGuard port forward; use DDNS only if the public IPv4 is dynamic.
 
 ## Public-repository boundary
 
