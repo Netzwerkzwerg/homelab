@@ -24,7 +24,8 @@ This file is the concise status summary. Detailed network policy belongs in [NET
 | NetBox | Configured | Application and stack deployed and healthy; inventory import is pending. Service access details in [ARCHITECTURE.md](ARCHITECTURE.md) |
 | Internal DNS domain | Configured | `home.arpa` |
 | VLANs and firewall policy | Partially configured | See [NETWORK.md](NETWORK.md) for per-VLAN status and open validation |
-| Upstream FRITZ!Box topology | Planned | OPNsense WAN stays in FRITZ!Box EG home network; FRITZ!Box Büro WAN moves to isolated FRITZ!Box EG LAN guest network using a VLAN-capable switch path |
+| Upstream FRITZ!Box topology | Configured | OPNsense WAN uses FRITZ!Box EG home network; FRITZ!Box Büro WAN uses isolated guest network. Switch transport VLAN100 (home) and VLAN200 (guest) are configured on both upstream switches |
+| Upstream switch VLAN300 | Configured | Reserved on both switches for future physical office-LAN access from ground floor and upper floor; access connections remain open |
 | Upstream-home access policy | Planned | Block upstream home subnet from all OPNsense VLANs by default; add narrowly scoped management exceptions for FRITZ!Box EG and selected upstream switches |
 | IPv6 | Deferred | Currently blocked/disabled; comprehensive IPv6 design and implementation will be a separate later phase |
 | OPNsense mDNS Repeater | Configured | Enabled on VLANs 30, 40, 50, and 90 |
@@ -41,8 +42,8 @@ This file is the concise status summary. Detailed network policy belongs in [NET
 1. Review and verify final interface rules for VLAN90 and VLAN95.
 2. Perform a complete functional validation of all seven VLANs, including DHCP, DNS, Internet access, isolation, permitted flows, and management access.
 3. Import the network structure, VLANs, prefixes, devices, interfaces, and IP assignments into NetBox. Keep actual inventory private and do not copy it into this public repository.
-4. Implement the selected upstream FRITZ!Box topology: keep OPNsense WAN in the FRITZ!Box EG home network and move FRITZ!Box Büro WAN to the isolated LAN guest network, transporting both segments over the planned VLAN-capable switch path.
-5. Add and test OPNsense rules that block access from all internal VLANs to the upstream home subnet by default, with narrowly scoped management exceptions for selected upstream devices.
+4. Add and test OPNsense rules that block access from all internal VLANs to the upstream home subnet by default, with narrowly scoped management exceptions for the FRITZ!Box EG and the two upstream switches.
+5. Complete the physical access connections for reserved switch VLAN300 if/when office LAN access from the ground floor and upper floor is required.
 6. Deploy Cast receivers, then test mDNS discovery and actual casting; add the planned VLAN50/VLAN90 access rules if not already present.
 7. Deploy planned services and add narrowly scoped firewall exceptions (Home Assistant to required IoT devices; Companion to Cast devices).
 8. Configure VLAN95 Captive Portal after the public domain, portal URLs, and certificate approach are settled.
