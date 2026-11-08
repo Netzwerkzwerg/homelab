@@ -13,7 +13,7 @@ This public repository is the concise, English-language reference for homelab ar
 - The internal DNS domain is `home.arpa`.
 - Full end-to-end validation of the network and firewall flows remains open. Cast receivers are not yet deployed, so discovery and casting have not been tested.
 - NetBox is deployed and healthy; importing the actual inventory is pending.
-- The selected upstream design keeps OPNsense WAN in the normal FRITZ!Box EG home network and moves FRITZ!Box Büro WAN to the isolated FRITZ!Box EG LAN guest network via a planned VLAN-capable switch path. Upstream-subnet blocking with narrow management exceptions is planned in OPNsense.
+- The selected upstream design keeps OPNsense WAN in the normal FRITZ!Box EG home network and connects FRITZ!Box Büro WAN to the isolated FRITZ!Box EG LAN guest network. Both upstream switches are configured with switch VLAN100 for the home segment, VLAN200 for the guest segment, and VLAN300 reserved for future physical office-LAN access. Upstream-subnet blocking with narrow management exceptions is planned in OPNsense.
 - IPv6 is currently blocked/disabled; a comprehensive IPv6 design and implementation is deferred.
 - Office remote access and home remote access are separate VPN systems. The office server's outbound VPN is only for the office network; a separate OPNsense VPN may provide access to the home VLANs.
 - See [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) for the concise status summary, [ARCHITECTURE.md](ARCHITECTURE.md) for the system design, and [NETWORK.md](NETWORK.md) for network policy and validation status.
