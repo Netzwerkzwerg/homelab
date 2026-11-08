@@ -13,14 +13,17 @@ A shared floating rule provides DNS and DHCP access for the VLANs. IPv6 is curre
 - FRITZ!Box EG remains the upstream Internet router and provides the normal home network for its private clients and NAS.
 - OPNsense WAN remains connected to the normal FRITZ!Box EG home network. OPNsense continues to be the gateway and firewall for all locally managed VLANs.
 - FRITZ!Box Büro WAN is to be connected to the isolated LAN guest network of FRITZ!Box EG. Its office LAN remains behind FRITZ!Box Büro and is separate from OPNsense and its VLANs.
-- A VLAN-capable switch near FRITZ!Box EG and the existing basement switch are planned to transport the normal home segment and the FRITZ!Box guest segment separately over the inter-switch link. This requires suitable VLAN configuration and is not yet implemented.
+- The VLAN-capable switch connected to FRITZ!Box EG and the basement distribution switch are installed and configured. VLAN 100 carries the normal FRITZ!Box EG home segment (including the OPNsense WAN and additional upper-floor home clients); VLAN 200 carries the FRITZ!Box EG guest segment to the FRITZ!Box Büro WAN. Both VLANs are configured across the two switches.
+- VLAN 300 is also configured on both switches as a reserved path for future physical access to the office LAN from the ground floor and upper floor, without using the office VPN. The required access ports/physical connections and service are future work.
+- These switch transport VLANs (100/200/300) are distinct from the OPNsense-managed internal VLANs (10/20/30/40/50/90/95).
 
 ### Intended OPNsense policy
 
-- Create an alias for the complete upstream FRITZ!Box EG home subnet (actual prefix kept private in NetBox).
-- Block access to that upstream subnet by default on the internal OPNsense VLANs. This is a destination-network restriction; it must not block ordinary Internet access, because Internet destinations are not part of the upstream private subnet and OPNsense forwards them through its WAN gateway.
-- Add narrowly scoped exceptions only for designated management clients to the FRITZ!Box EG management address and selected upstream switch management addresses/services.
-- Do not grant broad upstream-subnet access to the entire Management VLAN unless required. Prefer specific source devices, destination addresses, and management ports.
+- Create an alias for the complete upstream FRITZ!Box EG home subnet (actual prefix kept private in NetBox), plus a separate alias containing only the FRITZ!Box EG and the two upstream switch management addresses.
+- On each internal OPNsense VLAN, place the narrowly scoped management pass rule above the upstream-subnet block rule, and place that block above any general Internet/pass rule. This is a destination-network restriction and must not block ordinary Internet access, because Internet destinations are not part of the upstream private subnet and OPNsense forwards them through its WAN gateway.
+- VLAN10 Management may access the explicitly listed upstream management hosts. On other VLANs, only designated administrator clients (where applicable) may access those hosts.
+- Block all remaining access from each internal VLAN to the complete upstream FRITZ!Box EG home subnet.
+- Do not grant broad upstream-subnet access to the entire Management VLAN. Prefer the specific management hosts and required management ports.
 - The policy must cover both IPv4 and IPv6. IPv6 is currently blocked/disabled, so no IPv6 access is intended until a complete IPv6 plan is designed and tested.
 
 ### Remote access / VPN decisions
@@ -106,7 +109,8 @@ Do not add actual addresses or detailed device inventory to this public document
 - Test all seven VLANs: VLAN tagging, DHCP, DNS, Internet access, internal isolation, permitted flows, and management access.
 - Test mDNS discovery and actual casting once receivers are available.
 - Keep IPv6 blocked/disabled until a complete IPv6 addressing, routing, firewall, and remote-access design is implemented and validated.
-- Implement and test the selected FRITZ!Box EG / FRITZ!Box Büro topology and upstream-subnet restrictions described above.
+- Implement and test OPNsense upstream-subnet restrictions and the narrowly scoped management exceptions described above.
+- Configure and test the reserved VLAN300 physical office-network access when the required ground-floor and upper-floor connections are installed.
 - Verify the public IPv4 reachability of the Internet connection before configuring a home WireGuard port forward; use DDNS only if the public IPv4 is dynamic.
 
 ## Public-repository boundary
