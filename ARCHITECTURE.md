@@ -20,7 +20,7 @@ Dedicated WAN interface
 
 The UniFi Network Application runs in a Debian LXC. The U7 Lite is adopted, updated, and online. A separate Debian VM in the Services VLAN runs Docker Engine and Docker Compose. NetBox is deployed there.
 
-The selected upstream-router design keeps OPNsense WAN in the normal FRITZ!Box EG home network. The separate FRITZ!Box Büro WAN is to be moved to the isolated LAN guest network of FRITZ!Box EG. A managed/VLAN-capable switch near FRITZ!Box EG and the existing basement switch are intended to carry the home and guest segments separately over the uplink. This cabling and VLAN transport are planned, not yet implemented. The office LAN remains behind FRITZ!Box Büro.
+The selected upstream-router design keeps OPNsense WAN in the normal FRITZ!Box EG home network. The separate FRITZ!Box Büro WAN is connected to the isolated LAN guest network of FRITZ!Box EG. The VLAN-capable switch connected to FRITZ!Box EG and the basement distribution switch are installed and configured: switch VLAN 100 carries the normal FRITZ!Box EG home segment (including OPNsense WAN and additional upper-floor home clients), VLAN 200 carries the FRITZ!Box EG guest segment to the FRITZ!Box Büro WAN, and VLAN 300 is reserved for future physical access to the office LAN from the ground floor and upper floor without VPN. VLAN300's physical access connections remain future work. These switch transport VLANs are distinct from the OPNsense internal VLANs. The office LAN remains behind FRITZ!Box Büro.
 
 ## Responsibilities
 
@@ -43,7 +43,7 @@ The selected upstream-router design keeps OPNsense WAN in the normal FRITZ!Box E
 
 ## Network security and discovery
 
-OPNsense provides inter-VLAN routing and firewalling. Its WAN remains on the normal FRITZ!Box EG home network so that selected management clients can reach explicitly allowed upstream infrastructure. Access from OPNsense VLANs to the upstream home subnet is intended to be blocked by default, with narrowly scoped management exceptions. The separate office router is intended to use the FRITZ!Box EG LAN guest network, isolating the office from the upstream home devices. Detailed policy and implementation status are maintained in [NETWORK.md](NETWORK.md).
+OPNsense provides inter-VLAN routing and firewalling. Its WAN remains on the normal FRITZ!Box EG home network. Access from OPNsense VLANs to the upstream home subnet is intended to be blocked by default, with narrowly scoped management exceptions for the FRITZ!Box EG and the two upstream switches. The separate office router is intended to use the FRITZ!Box EG LAN guest network, isolating the office from the upstream home devices. Detailed policy and implementation status are maintained in [NETWORK.md](NETWORK.md).
 
 IPv6 is currently blocked/disabled. A complete, deliberate IPv6 design—including addressing, routing, firewall policy, and validation—is deferred until a later phase; IPv6 must not be treated as implicitly secured by the current IPv4 policy.
 
