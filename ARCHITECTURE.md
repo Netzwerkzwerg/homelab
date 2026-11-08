@@ -20,6 +20,8 @@ Dedicated WAN interface
 
 The UniFi Network Application runs in a Debian LXC. The U7 Lite is adopted, updated, and online. A separate Debian VM in the Services VLAN runs Docker Engine and Docker Compose. NetBox is deployed there.
 
+The selected upstream-router design keeps OPNsense WAN in the normal FRITZ!Box EG home network. The separate FRITZ!Box Büro WAN is to be moved to the isolated LAN guest network of FRITZ!Box EG. A managed/VLAN-capable switch near FRITZ!Box EG and the existing basement switch are intended to carry the home and guest segments separately over the uplink. This cabling and VLAN transport are planned, not yet implemented. The office LAN remains behind FRITZ!Box Büro.
+
 ## Responsibilities
 
 - **Proxmox:** virtualization host for VMs and containers.
@@ -37,10 +39,13 @@ The UniFi Network Application runs in a Debian LXC. The U7 Lite is adopted, upda
 - All stack containers were verified healthy after initial database migrations.
 - The internal DNS domain is `home.arpa`.
 - Exact host addresses, hostnames, credentials, and detailed inventory are intentionally not documented in this public repository.
+- NetBox initial deployment and health checks are complete. Importing the actual infrastructure inventory (sites/locations, devices, interfaces, VLANs, prefixes, and IP assignments) is still pending.
 
 ## Network security and discovery
 
-OPNsense provides inter-VLAN routing and firewalling. The detailed VLAN purposes, current firewall rules, mDNS configuration, planned access exceptions, and outstanding validation are maintained in [NETWORK.md](NETWORK.md), which is the single reference for network policy.
+OPNsense provides inter-VLAN routing and firewalling. Its WAN remains on the normal FRITZ!Box EG home network so that selected management clients can reach explicitly allowed upstream infrastructure. Access from OPNsense VLANs to the upstream home subnet is intended to be blocked by default, with narrowly scoped management exceptions. The separate office router is intended to use the FRITZ!Box EG LAN guest network, isolating the office from the upstream home devices. Detailed policy and implementation status are maintained in [NETWORK.md](NETWORK.md).
+
+IPv6 is currently blocked/disabled. A complete, deliberate IPv6 design—including addressing, routing, firewall policy, and validation—is deferred until a later phase; IPv6 must not be treated as implicitly secured by the current IPv4 policy.
 
 mDNS discovery does not itself authorize Cast control or media traffic. Actual cross-VLAN casting remains untested because Cast receivers have not yet been deployed.
 
