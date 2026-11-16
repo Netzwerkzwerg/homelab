@@ -7,13 +7,15 @@ This public repository is the concise, English-language reference for homelab ar
 ## Current state
 
 - Proxmox runs on the NiPoGi mini PC; OPNsense runs as a Proxmox VM and provides routing, firewalling, DHCP, and DNS.
-- UniFi Network Application runs in a Debian LXC; the UniFi U7 Lite is adopted, updated, and online.
-- A Debian VM in the Services VLAN runs Docker Engine and Docker Compose for self-hosted applications.
-- NetBox is deployed on that Docker VM; its web application, background worker, PostgreSQL database, and Valkey services are running and healthy.
+- UniFi Network Application runs in a Debian LXC; the UniFi U7 Lite is adopted and online.
+- A Debian VM in the Services VLAN runs Docker Engine and Docker Compose for self-hosted applications, including NetBox and Immich.
+- NetBox is deployed and healthy. The initial infrastructure inventory import is complete. More detailed firewall-rule and connection records can be added selectively if they provide operational value; exhaustive modelling is not required for this home network.
+- Immich is deployed in Docker. Its machine-learning service runs locally on the Docker VM by default. It can optionally run on the gaming PC's Ubuntu installation when that PC is deliberately booted with its hot-swap drive connected.
+- Docker on the services VM uses an explicit DNS server configuration for reliable container DNS resolution.
+- Home Assistant OS runs in a separate VM. Mosquitto is installed as a Home Assistant add-on and provides the MQTT broker.
+- The existing Cast receivers have been moved to VLAN30. mDNS discovery and Cast communication from VLAN50 Trusted Clients have been verified; the required firewall access is configured.
 - The internal DNS domain is `home.arpa`.
-- Full end-to-end validation of the network and firewall flows remains open. Cast receivers are not yet deployed, so discovery and casting have not been tested.
-- NetBox is deployed and healthy; importing the actual inventory is pending.
-- The selected upstream design keeps OPNsense WAN in the normal FRITZ!Box EG home network and connects FRITZ!Box Büro WAN to the isolated FRITZ!Box EG LAN guest network. Both upstream switches are configured with switch VLAN100 for the home segment, VLAN200 for the guest segment, and VLAN300 reserved for future physical office-LAN access. Upstream-subnet blocking with narrow management exceptions is planned in OPNsense.
+- The selected upstream design keeps OPNsense WAN in the normal FRITZ!Box EG home network and connects FRITZ!Box Büro WAN to the isolated guest network. The upstream switch transport VLANs 100 and 200 are configured; VLAN300 remains reserved for future physical office-LAN access.
 - IPv6 is currently blocked/disabled; a comprehensive IPv6 design and implementation is deferred.
 - Office remote access and home remote access are separate VPN systems. The office server's outbound VPN is only for the office network; a separate OPNsense VPN may provide access to the home VLANs.
 - See [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) for the concise status summary, [ARCHITECTURE.md](ARCHITECTURE.md) for the system design, and [NETWORK.md](NETWORK.md) for network policy and validation status.
@@ -28,6 +30,7 @@ When proposing a significant architectural change, briefly cover what changes, w
 
 - GitHub: concise architecture, design intent, and decisions.
 - NetBox: actual IP assignments and detailed infrastructure inventory.
+- OPNsense: actual firewall rules and network enforcement.
 - Official vendor documentation: current technical behavior and configuration guidance.
 
 Do not duplicate detailed inventory or full configuration tables here. Keep real IP addresses, prefixes, credentials, keys, tokens, MAC addresses, VPN endpoints, device-specific hostnames, and other sensitive details out of this public repository. Use anonymized examples only.
