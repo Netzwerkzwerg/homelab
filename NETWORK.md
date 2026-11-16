@@ -55,6 +55,7 @@ The selected design keeps OPNsense WAN in the normal FRITZ!Box EG home network. 
 - OPNsense is used as a third-party gateway; VLAN networks are represented in UniFi and mapped to WLANs.
 - The access point's switch connection uses the management network untagged/native and the other WLAN VLANs tagged.
 - mDNS proxying in UniFi is disabled.
+- For the managed switch web interface, the Apply control behaved correctly in Safari; in Firefox it appeared disabled.
 
 ## Open work
 
