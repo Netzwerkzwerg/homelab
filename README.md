@@ -1,21 +1,23 @@
 # Homelab
 
-Short, AI-readable documentation for the homelab's current state and target design.
+Concise, public documentation of the homelab's current architecture, network design, and durable decisions.
 
-## Documents
+## Documentation
 
-- [Project status and decisions](PROJECT_CONTEXT.md) — what is configured, planned, and still open.
-- [Network design](NETWORK.md) — VLAN purposes, current firewall policy, and validation work.
-- [Architecture](ARCHITECTURE.md) — Proxmox, OPNsense, UniFi, Docker, NetBox, and design principles.
-- [AI working context](AI_CONTEXT.md) — how assistants should use and update this repository.
-- [Access test](TEST_ACCESS.md) — public test file for checking whether external AI assistants can read the repository.
+- [Project status](PROJECT_CONTEXT.md) — configured services, decisions, and remaining work.
+- [Network design](NETWORK.md) — VLANs, firewall policy, discovery, and validation.
+- [Architecture](ARCHITECTURE.md) — virtualization, infrastructure services, and application hosting.
+- [AI working context](AI_CONTEXT.md) — documentation conventions and collaboration guidance.
+- [Access test](TEST_ACCESS.md) — public test file for checking repository access.
 
-## Current state
+## Current overview
 
-Proxmox and OPNsense are running. UniFi Network Application is deployed in a Debian LXC and the U7 Lite access point is adopted and online. A Debian Docker VM in the Services VLAN hosts NetBox, Immich, and their supporting services. Home Assistant OS runs in a separate VM, with Mosquitto available as its MQTT broker add-on. NetBox's initial infrastructure inventory import is complete; detailed firewall-rule and connection records remain optional follow-up work rather than a prerequisite for using NetBox.
+Proxmox hosts OPNsense, infrastructure management services, and application workloads. OPNsense provides routing, firewalling, DHCP, and DNS for the managed VLANs. UniFi manages the wireless access point. A Debian Docker VM hosts NetBox and application services including Immich. Home Assistant runs as a separate VM.
 
-Seven VLANs are defined. The existing Cast receivers have been moved to the Multimedia/Cast VLAN. mDNS discovery and Cast communication from the Trusted Clients VLAN have been verified, so the corresponding OPNsense firewall access is configured. OPNsense also provides DHCP, DNS, inter-VLAN routing, and mDNS repeating. The Docker host has an explicit DNS server configuration for container name resolution. IPv6 remains blocked/disabled pending a complete later implementation.
+The NetBox baseline inventory import is complete. Detailed firewall-rule and network-connection records remain optional follow-up work, not a prerequisite for a useful home-network inventory.
 
-The optional Immich machine-learning workload can run either on the Docker VM or on the Ubuntu installation on the gaming PC. Using the gaming PC requires booting it into Ubuntu with the hot-swap drive connected.
+All existing Cast devices have moved to the Multimedia/Cast VLAN. Discovery and casting communication from the primary Trusted Clients VLAN have been verified, so the required firewall path is configured.
 
-All documentation is in English. Do not publish real IP assignments, credentials, hostnames, or other sensitive operational details.
+The Docker host uses an explicitly configured DNS resolver for container name resolution. Immich normally uses its local machine-learning service; an optional GPU-assisted ML setup on the gaming PC remains available by booting Ubuntu with the hot-swap drive installed.
+
+Keep this repository focused on durable architecture and decisions. Do not publish credentials, real IP assignments, MAC addresses, VPN endpoints, or other sensitive operational details.
