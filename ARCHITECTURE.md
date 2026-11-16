@@ -44,7 +44,7 @@ The UniFi Network Application runs in a Debian LXC. The access point is adopted 
 
 ## NetBox scope
 
-The initial infrastructure inventory import is complete. NetBox is the source of truth for detailed devices, interfaces, VLANs, prefixes, and IP assignments. Detailed firewall-rule and physical/logical connection records are optional follow-up work: model them where they materially help operations or troubleshooting, but do not pursue exhaustive documentation for its own sake. OPNsense remains the source of truth for the actual firewall configuration.
+The initial infrastructure inventory import is complete. NetBox is the source of truth for detailed devices, interfaces, VLANs, prefixes, and IP assignments. Application services are recorded in NetBox; add each newly deployed service there as it is created. Detailed firewall-rule and physical/logical connection records are optional follow-up work: model them where they materially help operations or troubleshooting, but do not pursue exhaustive documentation for its own sake. OPNsense remains the source of truth for the actual firewall configuration.
 
 ## Network security and discovery
 
